@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container card my-4 p-4 shadow-sm">
-    <h1 class="mb-4">Data Penerimaan</h1>
+    <h1 class="mb-4"></h1>
 
     <!-- Tabel Data Penerimaan -->
     <table class="table table-striped table-bordered">

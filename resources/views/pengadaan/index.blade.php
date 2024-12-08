@@ -42,6 +42,8 @@
                     <!-- Tombol Detail -->
                     <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#detailModal"
                             data-idpengadaan="{{ $pengadaan->idpengadaan }}">Detail</button>
+                    <a href="{{ route('penerimaan.create', $pengadaan->idpengadaan) }}" class="btn btn-primary btn-sm">Ajukan Penerimaan</a>
+                    <a href="{{ route('penerimaan.create', $pengadaan->idpengadaan) }}" class="btn btn-danger btn-sm">Ajukan Retur</a>
                 </td>
             </tr>
             @endforeach
@@ -120,6 +122,11 @@
                         </div>
                     </div>
                     <button type="button" class="btn btn-success mt-3" id="add-new-barang">Tambah Barang Lain</button>
+                    <!-- Input PPN -->
+                    <div class="form-group">
+                        <label for="ppnInput">PPN (%)</label>
+                        <input type="number" class="form-control" id="ppnInput" name="ppn" value="10" min="0" max="100" required>
+                    </div>
 
                     <!-- Ringkasan -->
                     <div class="mt-4">
@@ -224,38 +231,56 @@
     });
 
 
-    function updateRingkasan() {
-        let subtotal = 0;
+    // Fungsi untuk memperbarui ringkasan
+function updateRingkasan() {
+    let subtotal = 0;
 
-        document.querySelectorAll('.barang-row').forEach((row, index) => {
-            const barangSelect = row.querySelector('.barang-select');
-            const hargaInput = row.querySelector('.harga-satuan');
-            const jumlahInput = row.querySelector('.jumlah-barang');
+    // Hitung subtotal dari barang yang dipilih
+    document.querySelectorAll('.barang-row').forEach((row, index) => {
+        const barangSelect = row.querySelector('.barang-select');
+        const hargaInput = row.querySelector('.harga-satuan');
+        const jumlahInput = row.querySelector('.jumlah-barang');
 
-            if (barangSelect && hargaInput && jumlahInput) {
-                const selectedOption = barangSelect.selectedOptions[0];
-                const harga = selectedOption ? parseFloat(selectedOption.getAttribute('data-harga')) || 0 : 0;
-                const jumlah = parseFloat(jumlahInput.value) || 0;
+        if (barangSelect && hargaInput && jumlahInput) {
+            const selectedOption = barangSelect.selectedOptions[0];
+            const harga = selectedOption ? parseFloat(selectedOption.getAttribute('data-harga')) || 0 : 0;
+            const jumlah = parseFloat(jumlahInput.value) || 0;
 
-                hargaInput.value = harga; // Perbarui harga satuan jika ada perubahan
-                subtotal += harga * jumlah;
-            }
-        });
+            hargaInput.value = harga; // Perbarui harga satuan jika ada perubahan
+            subtotal += harga * jumlah;
+        }
+    });
 
-        const ppn = subtotal * 0.1;
-        const total = subtotal + ppn;
+    // Ambil nilai PPN dari input PPN
+    const ppnPercentage = parseFloat(document.getElementById('ppnInput').value) || 0;
+    const ppn = (subtotal * ppnPercentage) / 100; // Hitung PPN berdasarkan persentase
 
-        // Update UI untuk ringkasan
-        document.getElementById('subtotal').textContent = `Rp ${subtotal.toLocaleString()}`;
-        document.getElementById('ppn').textContent = `Rp ${ppn.toLocaleString()}`;
-        document.getElementById('total').textContent = `Rp ${total.toLocaleString()}`;
-    }
+    // Total = subtotal + PPN
+    const total = subtotal + ppn;
 
-    // Pastikan barang pertama memiliki listener
-    document.querySelector('.barang-select').addEventListener('change', updateRingkasan);
-    document.querySelector('.jumlah-barang').addEventListener('input', updateRingkasan);
-    document.querySelector('.plus-qty').addEventListener('click', incrementQty);
-    document.querySelector('.minus-qty').addEventListener('click', decrementQty);
+    // Update UI untuk ringkasan
+    document.getElementById('subtotal').textContent = `Rp ${subtotal.toLocaleString()}`;
+    document.getElementById('ppn').textContent = `Rp ${ppn.toLocaleString()}`;
+    document.getElementById('total').textContent = `Rp ${total.toLocaleString()}`;
+}
+
+// Event listener untuk PPN input
+document.getElementById('ppnInput').addEventListener('input', updateRingkasan);
+
+// Event listener untuk barang dan jumlah barang
+document.querySelectorAll('.barang-select').forEach(select => {
+    select.addEventListener('change', updateRingkasan);
+});
+document.querySelectorAll('.jumlah-barang').forEach(input => {
+    input.addEventListener('input', updateRingkasan);
+});
+document.querySelectorAll('.plus-qty').forEach(button => {
+    button.addEventListener('click', incrementQty);
+});
+document.querySelectorAll('.minus-qty').forEach(button => {
+    button.addEventListener('click', decrementQty);
+});
+
 
 
 </script>

@@ -78,17 +78,25 @@
       <li class="sidebar-item">
         <a class="sidebar-link sidebar-link primary-hover-bg" href="{{ route('pengadaan.index')}}" aria-expanded="false">
           <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
+            <iconify-icon icon="solar:bag-check-line-duotone" class="fs-6"></iconify-icon>
           </span>
-          <span class="hide-menu ps-1">Pengadaan</span>
+          <span class="hide-menu ps-1">Pengadaan dan Penerimaan</span>
         </a>
       </li>
       <li class="sidebar-item">
-        <a class="sidebar-link sidebar-link primary-hover-bg" href="{{ route('penerimaan.index')}}" aria-expanded="false">
+        <a class="sidebar-link sidebar-link primary-hover-bg" href="{{ route('penjualan.index')}}" aria-expanded="false">
           <span class="aside-icon p-2 bg-primary-subtle rounded-1">
-            <iconify-icon icon="solar:screencast-2-line-duotone" class="fs-6"></iconify-icon>
+            <iconify-icon icon="solar:bag-check-line-duotone" class="fs-6"></iconify-icon>
           </span>
-          <span class="hide-menu ps-1">Penerimaan</span>
+          <span class="hide-menu ps-1">Penjualan</span>
+        </a>
+      </li>
+      <li class="sidebar-item">
+        <a class="sidebar-link sidebar-link primary-hover-bg" href="{{ route('retur.index')}}" aria-expanded="false">
+          <span class="aside-icon p-2 bg-primary-subtle rounded-1">
+            <iconify-icon icon="solar:bag-check-line-duotone" class="fs-6"></iconify-icon>
+          </span>
+          <span class="hide-menu ps-1">Retur Barang</span>
         </a>
       </li>
     </ul>

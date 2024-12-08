@@ -10,7 +10,7 @@ class SatuanController extends Controller
     public function index()
     {
         // Mengambil semua data dari tabel satuan
-        $satuans = DB::select('SELECT * FROM satuan');
+        $satuans = DB::select('SELECT * FROM view_satuan');
 
         // Menampilkan halaman index dengan data satuan
         return view('satuan.index', compact('satuans'));

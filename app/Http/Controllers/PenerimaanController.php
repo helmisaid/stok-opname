@@ -89,29 +89,28 @@ class PenerimaanController extends Controller
 }
 
 
-    public function selectPengadaan()
-    {
-        // Ambil semua pengadaan dengan status '0' (belum diterima)
-        $pengadaans = DB::select("SELECT idpengadaan, status FROM pengadaan WHERE status = '0'");
-        return view('penerimaan.select-pengadaan', compact('pengadaans'));
+
+public function store(Request $request)
+{
+    $idPengadaan = $request->input('id_pengadaan');
+    $items = $request->input('barang'); // Mengambil input array 'barang'
+
+    // Validasi input array
+    if (!is_array($items) || empty($items)) {
+        return redirect()->back()->withErrors(['error' => 'Tidak ada data barang yang diterima.']);
     }
 
+    $idPenerimaan = null;
 
-    public function store(Request $request)
-    {
-        $idPengadaan = $request->input('id_pengadaan');
-        $item = $request->input('detail_penerimaan'); // Data satu barang
-
-        // Validasi input
-        if (!isset($item['idbarang'], $item['jumlah_terima'], $item['harga_satuan'])) {
-            return redirect()->back()->withErrors(['error' => 'Data barang tidak lengkap.']);
+    foreach ($items as $idBarang => $item) {
+        if (!isset($item['terima'])) {
+            continue; // Skip barang yang tidak dicentang
         }
 
-        $idBarang = $item['idbarang'];
-        $jumlahTerima = (int)$item['jumlah_terima'];
-        $hargaSatuan = (int)$item['harga_satuan'];
+        $jumlahTerima = (int)($item['jumlah_terima'] ?? 0);
+        $hargaSatuan = (int)($item['harga_satuan'] ?? 0);
 
-        // Ambil data barang pengadaan termasuk total diterima
+        // Ambil data barang dari database
         $barangPengadaan = DB::selectOne("
             SELECT
                 dp.idbarang,
@@ -136,22 +135,20 @@ class PenerimaanController extends Controller
 
         $sisa = $barangPengadaan->jumlah_pesan - $barangPengadaan->total_terima;
 
-        // Validasi sisa
-        if ($jumlahTerima > $sisa) {
-            return redirect()->back()->withErrors(['error' => 'Jumlah terima melebihi sisa untuk barang ID ' . $idBarang]);
+        // Validasi jumlah terima
+        if ($jumlahTerima > $sisa || $jumlahTerima <= 0) {
+            return redirect()->back()->withErrors(['error' => 'Jumlah terima tidak valid untuk barang ID ' . $idBarang]);
         }
 
-        if ($jumlahTerima <= 0) {
-            return redirect()->back()->withErrors(['error' => 'Jumlah terima harus lebih dari 0.']);
+        // Insert ke tabel penerimaan jika belum ada
+        if (!$idPenerimaan) {
+            $idPenerimaan = DB::table('penerimaan')->insertGetId([
+                'created_at' => now(),
+                'status' => '1',
+                'idpengadaan' => $idPengadaan,
+                'iduser' => session('user.iduser') // Asumsikan iduser disimpan di session
+            ]);
         }
-
-        // Insert penerimaan header
-        $idPenerimaan = DB::table('penerimaan')->insertGetId([
-            'created_at' => now(),
-            'status' => '0',
-            'idpengadaan' => $idPengadaan,
-            'iduser' => session('user.iduser') // Asumsikan iduser disimpan di session
-        ]);
 
         // Insert detail penerimaan
         DB::table('detail_penerimaan')->insert([
@@ -161,31 +158,33 @@ class PenerimaanController extends Controller
             'harga_satuan_terima' => $hargaSatuan,
             'sub_total_terima' => $jumlahTerima * $hargaSatuan
         ]);
-
-        // Cek apakah semua barang telah diterima
-        $totalBarang = DB::selectOne("
-    SELECT
-        (SELECT SUM(jumlah) FROM detail_pengadaan WHERE idpengadaan = ?) AS total_pesan,
-        COALESCE(SUM(dpr.jumlah_terima), 0) AS total_diterima
-    FROM
-        detail_pengadaan dp
-    LEFT JOIN detail_penerimaan dpr ON dp.idbarang = dpr.barang_idbarang
-        AND dpr.idpenerimaan IN (
-            SELECT p.idpenerimaan
-            FROM penerimaan p
-            WHERE p.idpengadaan = ?
-        )
-    WHERE dp.idpengadaan = ?
-", [$idPengadaan, $idPengadaan, $idPengadaan]);
-
-
-        if ($totalBarang->total_pesan == $totalBarang->total_diterima) {
-            // Update status pengadaan menjadi selesai (1)
-            DB::table('pengadaan')->where('idpengadaan', $idPengadaan)->update(['status' => 1]);
-        }
-     
-        return redirect()->route('pengadaan.index')->with('success', 'Penerimaan berhasil ditambahkan.');
     }
+
+    // Update status pengadaan jika semua barang telah diterima
+    $totalBarang = DB::selectOne("
+        SELECT
+            (SELECT SUM(jumlah) FROM detail_pengadaan WHERE idpengadaan = ?) AS total_pesan,
+            COALESCE(SUM(dpr.jumlah_terima), 0) AS total_diterima
+        FROM
+            detail_pengadaan dp
+        LEFT JOIN detail_penerimaan dpr ON dp.idbarang = dpr.barang_idbarang
+            AND dpr.idpenerimaan IN (
+                SELECT p.idpenerimaan
+                FROM penerimaan p
+                WHERE p.idpengadaan = ?
+            )
+        WHERE dp.idpengadaan = ?
+    ", [$idPengadaan, $idPengadaan, $idPengadaan]);
+
+    if ($totalBarang->total_pesan == $totalBarang->total_diterima) {
+        DB::table('pengadaan')->where('idpengadaan', $idPengadaan)->update(['status' => 1]);
+
+    }
+
+    return redirect()->back()->with('success', 'Penerimaan berhasil ditambahkan.');
+}
+
+
 
 
     // fungsi histori penerimaan

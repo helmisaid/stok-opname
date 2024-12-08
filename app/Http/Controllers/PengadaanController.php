@@ -23,6 +23,7 @@ class PengadaanController extends Controller
     FROM pengadaan p
     JOIN vendor v ON p.vendor_idvendor = v.idvendor
     JOIN user u ON p.user_iduser = u.iduser -- Join ke tabel users
+    ORDER BY p.idpengadaan DESC
 ");
 
 $vendors = DB::select("SELECT * FROM vendor");
@@ -49,8 +50,12 @@ return view('pengadaan.index', compact('pengadaans', 'vendors', 'barangs'));
         $subtotal += $subTotal;
     }
 
-    // Hitung PPN 10% dari subtotal
-    $ppn = $subtotal * 0.10;
+
+    // Ambil nilai PPN dari input (misalnya 10%)
+    $ppnPercentage = $request->input('ppn', 0); // Default 10% jika tidak ada input
+
+    // Hitung PPN berdasarkan nilai yang diberikan
+    $ppn = $subtotal * ($ppnPercentage / 100);
 
     // Hitung total nilai (subtotal + ppn)
     $total = $subtotal + $ppn;

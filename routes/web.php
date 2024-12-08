@@ -1,16 +1,18 @@
 <?php
 
-use App\Http\Controllers\PenerimaanController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ReturController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\SatuanController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PengadaanController;
+use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\PenerimaanController;
 use App\Http\Middleware\SessionAuthMiddleware;
 use App\Http\Controllers\MarginPenjualanController;
 
@@ -88,17 +90,17 @@ Route::delete('/marginpenjualan/{id}', [MarginPenjualanController::class, 'destr
 
 Route::resource('pengadaan', PengadaanController::class);
 
-
+Route::resource('penjualan', PenjualanController::class);
 
 Route::get('/penerimaan', [PenerimaanController::class, 'index'])->name('penerimaan.index');
 Route::get('/penerimaan/create/{idpengadaan}', [PenerimaanController::class, 'create'])->name('penerimaan.create');
 Route::post('/penerimaan/store', [PenerimaanController::class, 'store'])->name('penerimaan.store');
-Route::get('/penerimaan/select-pengadaan', [PenerimaanController::class, 'selectPengadaan'])->name('penerimaan.selectPengadaan');
-Route::get('/history-penerimaan', [PenerimaanController::class, 'history'])->name('penerimaan.history');
 
 
-
-// Route::get('/search-barang', [PengadaanController::class, 'searchBarang'])->name('search.barang');
 Route::get('/pengadaan/detail/{idPengadaan}', [PengadaanController::class, 'detail']);
+
+Route::get('/retur', [ReturController::class, 'index'])->name('retur.index');
+Route::post('/retur/load-detail', [ReturController::class, 'loadDetail'])->name('retur.loadDetail');
+Route::post('/retur/store', [ReturController::class, 'store'])->name('retur.store');
 
 

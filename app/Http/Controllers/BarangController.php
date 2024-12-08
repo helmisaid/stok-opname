@@ -49,4 +49,50 @@ class BarangController extends Controller
 
         return redirect()->route('barang.index')->with('success', 'Barang berhasil ditambahkan.');
     }
+
+    public function edit($id)
+{
+    $barang = DB::selectOne("SELECT * FROM barang WHERE idbarang = ?", [$id]);
+
+    if (!$barang) {
+        return redirect()->route('barang.index')->with('error', 'Barang tidak ditemukan.');
+    }
+
+    $satuans = DB::select("SELECT * FROM satuan");
+    return view('barang.edit', compact('barang', 'satuans'));
+}
+
+
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'jenis' => 'required|in:A,B,C',
+        'nama' => 'required|max:45',
+        'idsatuan' => 'required|exists:satuan,idsatuan',
+        'harga' => 'required|numeric|min:0',
+    ]);
+
+    // Cek apakah barang ada
+    $barang = DB::selectOne("SELECT * FROM barang WHERE idbarang = ?", [$id]);
+
+    if (!$barang) {
+        return redirect()->route('barang.index')->with('error', 'Barang tidak ditemukan.');
+    }
+
+    // Update data barang dengan query MySQL biasa
+    DB::update("
+        UPDATE barang
+        SET nama = ?, jenis = ?, idsatuan = ?, harga = ?
+        WHERE idbarang = ?
+    ", [
+        $request->input('nama'),
+        $request->input('jenis'),
+        $request->input('idsatuan'),
+        $request->input('harga'),
+        $id
+    ]);
+
+    return redirect()->route('barang.index')->with('success', 'Barang berhasil diperbarui.');
+}
+
 }
