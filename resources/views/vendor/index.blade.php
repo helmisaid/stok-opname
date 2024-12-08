@@ -29,8 +29,8 @@
             <label for="status">Status</label>
             <select class="form-control" id="status" name="status" required>
                 <option value="">-- Pilih Status --</option>
-                <option value="A">A (Aktif)</option>
-                <option value="I">I (Inaktif)</option>
+                <option value="1">Aktif</option>
+                <option value="0">Tidak aktif</option>
             </select>
             @if ($errors->has('status'))
                 <small class="text-danger">{{ $errors->first('status') }}</small>
@@ -60,10 +60,11 @@
         <tbody>
             @foreach ($vendors as $ven)
             <tr>
-                <th scope="row">{{ $ven->idvendor }}</th>
+                <th scope="row">{{ $loop->iteration }}</th>
                 <td>{{ $ven->nama_vendor }}</td>
                 <td>{{ $ven->badan_hukum }}</td>
-                <td>{{ $ven->status }}</td>
+                <td>{{ $ven->status == 1 ? 'Aktif' : 'Tidak Aktif' }}</td>
+
                 <td>
                     <a href="{{ route('vendor.edit', $ven->idvendor) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form action="{{ route('vendor.destroy', $ven->idvendor) }}" method="POST" style="display:inline;">

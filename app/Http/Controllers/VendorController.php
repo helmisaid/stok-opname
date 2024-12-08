@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class VendorController extends Controller
 {
     public function index() {
-        $vendors = DB::select('select * from vendor');
+        $vendors = DB::select('select * from view_vendor');
 
         return view('vendor.index', compact('vendors'));
     }

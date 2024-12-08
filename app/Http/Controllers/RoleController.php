@@ -8,7 +8,7 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $roles = DB::select('SELECT * FROM role');
+        $roles = DB::select('SELECT * FROM view_role');
         return view('user.roleuser', compact('roles'));
     }
 
