@@ -32,10 +32,10 @@ class BarangController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'jenis' => 'required|in:A,B,C', // Validasi jenis barang
+            'jenis' => 'required|in:A,B,C', 
             'nama' => 'required|max:45',
-            'idsatuan' => 'required|exists:satuan,idsatuan', // Validasi satuan barang
-            'harga' => 'required|numeric|min:0', // Validasi harga
+            'idsatuan' => 'required|exists:satuan,idsatuan',
+            'harga' => 'required|numeric|min:0',
         ]);
 
         // Panggil Stored Procedure
@@ -43,7 +43,7 @@ class BarangController extends Controller
             $request->input('jenis'),
             $request->input('nama'),
             $request->input('idsatuan'),
-            1, // Status default (aktif)
+            1,
             $request->input('harga')
         ]);
 

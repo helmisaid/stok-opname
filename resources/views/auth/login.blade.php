@@ -72,38 +72,8 @@
                   <h2 class="mb-6 fs-8 fw-bolder">Welcome to Spike Admin</h2>
                   <p class="text-dark fs-4 mb-7">Your Admin Dashboard</p>
                   <div class="d-flex align-items-center gap-3">
-                    <a
-                      class="btn btn-white w-100 text-dark border fw-bold d-flex align-items-center justify-content-center rounded-1 py-6 shadow-none"
-                      href="javascript:void(0)"
-                      role="button"
-                    >
-                      <img
-                        src="../assets/images/svgs/google-icon.svg"
-                        alt=""
-                        class="img-fluid me-7"
-                        width="24"
-                        height="24"
-                      />
-                      <span class="d-none d-sm-block me-1 flex-shrink-0"
-                        >Sign in with</span
-                      >Google
-                    </a>
-                    <a
-                      class="btn btn-white w-100 text-dark border fw-bold d-flex align-items-center justify-content-center rounded-1 py-6 shadow-none"
-                      href="javascript:void(0)"
-                      role="button"
-                    >
-                      <img
-                        src="../assets/images/svgs/icon-facebook.svg"
-                        alt=""
-                        class="img-fluid me-2"
-                        width="24"
-                        height="24"
-                      />
-                      <span class="d-none d-sm-block me-1 flex-shrink-0"
-                        >Sign in with</span
-                      >FB
-                    </a>
+
+                
                   </div>
                   <div class="position-relative text-center my-7">
                     <p
